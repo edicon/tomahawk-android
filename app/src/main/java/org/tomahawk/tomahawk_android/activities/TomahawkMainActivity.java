@@ -73,6 +73,7 @@ import org.tomahawk.tomahawk_android.utils.ThreadManager;
 import org.tomahawk.tomahawk_android.utils.TomahawkRunnable;
 import org.tomahawk.tomahawk_android.views.PlaybackPanel;
 
+import android.Manifest;
 import android.accounts.AccountManager;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
@@ -80,6 +81,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
@@ -93,7 +95,9 @@ import android.os.Looper;
 import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -555,7 +559,17 @@ public class TomahawkMainActivity extends AppCompatActivity {
         });
 
         handleIntent(getIntent());
+
+        // ToDo: SDK 25 > then, check PERMISSION
+        boolean grantedAll = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        if (!grantedAll) {
+            ActivityCompat.requestPermissions( this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    REQUEST_PERMISSIONS);
+        }
     }
+
+    private int REQUEST_PERMISSIONS = 102;
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
